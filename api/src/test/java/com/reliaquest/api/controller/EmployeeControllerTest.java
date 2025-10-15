@@ -38,7 +38,7 @@ public class EmployeeControllerTest {
     public void testGetEmployeeById() {
         ResponseEntity<Employee> response = employeeController.getEmployeeById("abc");
 
-        assertNull(response);
+        assertNotNull(response);
     }
 
     @Test

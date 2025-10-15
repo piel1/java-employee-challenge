@@ -1,7 +1,8 @@
 package com.reliaquest.api.service;
 
-import com.reliaquest.api.EmployeeResponse;
+import com.reliaquest.api.model.EmployeeResponseMultiple;
 import com.reliaquest.api.model.Employee;
+import com.reliaquest.api.model.EmployeeResponseSingle;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -16,10 +17,21 @@ public class EmployeeService {
 
     public List<Employee> getAllEmployees() {
 
-        EmployeeResponse employeeResponse = webClient
+        EmployeeResponseMultiple employeeResponse = webClient
                 .get()
                 .retrieve()
-                .bodyToMono(EmployeeResponse.class)
+                .bodyToMono(EmployeeResponseMultiple.class)
+                .block();
+
+        return employeeResponse.getData();
+    }
+
+    public Employee getEmployeeById(String id) {
+        EmployeeResponseSingle employeeResponse = webClient
+                .get()
+                .uri("/{id}", id)
+                .retrieve()
+                .bodyToMono(EmployeeResponseSingle.class)
                 .block();
 
         return employeeResponse.getData();

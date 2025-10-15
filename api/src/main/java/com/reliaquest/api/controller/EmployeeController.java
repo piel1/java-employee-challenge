@@ -3,6 +3,7 @@ package com.reliaquest.api.controller;
 import com.reliaquest.api.model.CreateEmployeeInput;
 import com.reliaquest.api.model.Employee;
 import com.reliaquest.api.service.EmployeeService;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +29,8 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getEmployeeById(String id) {
-        return null;
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable String id) {
+        return new ResponseEntity(employeeService.getEmployeeById(id), HttpStatus.OK);
     }
 
     @GetMapping("/highestSalary")

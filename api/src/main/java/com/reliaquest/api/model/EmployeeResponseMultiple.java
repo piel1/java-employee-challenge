@@ -1,6 +1,5 @@
-package com.reliaquest.api;
+package com.reliaquest.api.model;
 
-import com.reliaquest.api.model.Employee;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +11,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class EmployeeResponse {
+public class EmployeeResponseMultiple {
 
-    public List<Employee> data;
+    private List<Employee> data;
+    private String status;
 
 }

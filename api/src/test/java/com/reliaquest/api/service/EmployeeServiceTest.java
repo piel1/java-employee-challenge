@@ -2,7 +2,7 @@ package com.reliaquest.api.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.reliaquest.api.EmployeeResponse;
+import com.reliaquest.api.model.EmployeeResponseMultiple;
 import com.reliaquest.api.model.Employee;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -54,7 +54,7 @@ public class EmployeeServiceTest {
 
         Employee mockEmployee = new Employee();
         mockEmployee.setEmployeeName("Pier-Jean Lizotte");
-        EmployeeResponse employeeResponse = new EmployeeResponse(List.of(mockEmployee));
+        EmployeeResponseMultiple employeeResponse = new EmployeeResponseMultiple(List.of(mockEmployee), "success");
         mockServer.enqueue(new MockResponse()
                 .setBody(new ObjectMapper().writeValueAsString(employeeResponse))
                 .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE));
