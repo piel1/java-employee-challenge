@@ -1,72 +1,130 @@
 package com.reliaquest.api.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.reliaquest.api.model.CreateEmployeeInput;
 import com.reliaquest.api.model.Employee;
 import com.reliaquest.api.service.EmployeeService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
+@WebMvcTest(EmployeeController.class)
 public class EmployeeControllerTest {
 
-    @Mock
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
     private EmployeeService employeeService;
 
-    @InjectMocks
-    private EmployeeController employeeController;
-
     @Test
-    public void testGetAllEmployees() {
+    public void testGetAllEmployees() throws Exception {
 
-        when(employeeService.getAllEmployees()).thenReturn(null);
+        Employee employee = Employee.builder().employeeName("John Connor").employeeAge(25).build();
 
-        ResponseEntity<List<Employee>> response = employeeController.getAllEmployees();
+        List<Employee> mockEmployees = List.of(employee);
 
-        assertNotNull(response);
+        when(employeeService.getAllEmployees()).thenReturn(mockEmployees);
+
+        mockMvc.perform(get("/employee"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].employee_name", is("John Connor")));
+
     }
 
     @Test
-    public void testGetEmployeeById() {
-        ResponseEntity<Employee> response = employeeController.getEmployeeById("abc");
+    public void testGetEmployeesByNameSearch() throws Exception {
 
-        assertNotNull(response);
+        Employee employee1 = Employee.builder().employeeName("Homer Simpson").build();
+        Employee employee2 = Employee.builder().employeeName("Marge Simpson").build();
+
+        List<Employee> mockEmployees = List.of(employee1, employee2);
+
+        when(employeeService.getEmployeesByNameSearch("Simpson")).thenReturn(mockEmployees);
+
+        mockMvc.perform(get("/employee/search/{0}", "Simpson"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].employee_name", is("Homer Simpson")))
+                .andExpect(jsonPath("$[1].employee_name", is("Marge Simpson")));
+
     }
 
     @Test
-    public void testGetHighestSalaryOfEmployees() {
-        ResponseEntity<Integer> response = employeeController.getHighestSalaryOfEmployees();
+    public void testGetEmployeeById() throws Exception {
 
-        assertNotNull(response);
-        assertEquals(17, response.getBody());
+        Employee mockEmployee = Employee.builder().employeeName("Sarah Connor").id("abc-123").build();
+
+        when(employeeService.getEmployeeById("abc-123")).thenReturn(mockEmployee);
+
+        mockMvc.perform(get("/employee/{0}", "abc-123"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is("abc-123")))
+                .andExpect(jsonPath("$.employee_name", is("Sarah Connor")));
     }
 
     @Test
-    public void testGetTopTenHighestEarningEmployeeNames() {
-        ResponseEntity<List<String>> response = employeeController.getTopTenHighestEarningEmployeeNames();
+    public void testGetHighestSalaryOfEmployees() throws Exception {
+        when(employeeService.getHighestSalaryOfEmployees()).thenReturn(925000);
 
-        assertNull(response);
+        mockMvc.perform(get("/employee/highestSalary"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is(925000)));
     }
 
     @Test
-    public void testCreateEmployee() {
-        ResponseEntity<Employee> response = employeeController.createEmployee(new CreateEmployeeInput());
+    public void testGetTopTenHighestEarningEmployeeNames() throws Exception {
 
-        assertNull(response);
+        List<String> employeeNames = Arrays.asList("John", "Paul", "Ringo", "George");
+
+        when(employeeService.getTopTenHighestEarningEmployeeNames()).thenReturn(employeeNames);
+
+        mockMvc.perform(get("/employee/topTenHighestEarningEmployeeNames"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(4)))
+                .andExpect(jsonPath("$[0]", is("John")))
+                .andExpect(jsonPath("$[1]", is("Paul")))
+                .andExpect(jsonPath("$[2]", is("Ringo")))
+                .andExpect(jsonPath("$[3]", is("George")));
     }
 
     @Test
-    public void testDeleteEmployeeById() {
-        ResponseEntity<String> response = employeeController.deleteEmployeeById("abc");
+    public void testCreateEmployee() throws Exception {
 
-        assertNull(response);
+        CreateEmployeeInput employeeInput = new CreateEmployeeInput("John Smith", 150000, 59, "Accountant");
+
+        Employee mockEmployee = Employee.builder().employeeName("John Smith").id("abc-123").employeeSalary(150000).build();
+
+        when(employeeService.createEmployee(any())).thenReturn(mockEmployee);
+
+        mockMvc.perform(post("/employee")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(employeeInput)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is("abc-123")))
+                .andExpect(jsonPath("$.employee_name", is("John Smith")))
+                .andExpect(jsonPath("$.employee_salary", is(150000)));
+    }
+
+    @Test
+    public void testDeleteEmployeeById() throws Exception {
+
+        when(employeeService.deleteEmployeeById(any())).thenReturn("true");
+
+        mockMvc.perform(delete("/employee/{0}", "abc-123"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is(true)));
     }
 }

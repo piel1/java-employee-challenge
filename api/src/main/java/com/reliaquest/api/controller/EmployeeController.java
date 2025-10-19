@@ -3,9 +3,7 @@ package com.reliaquest.api.controller;
 import com.reliaquest.api.model.CreateEmployeeInput;
 import com.reliaquest.api.model.Employee;
 import com.reliaquest.api.service.EmployeeService;
-import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,37 +18,37 @@ public class EmployeeController {
 
     @GetMapping
     public ResponseEntity<List<Employee>> getAllEmployees() {
-        return new ResponseEntity(employeeService.getAllEmployees(), HttpStatus.OK);
+        return ResponseEntity.ok(employeeService.getAllEmployees());
     }
 
     @GetMapping("/search/{searchString}")
-    public ResponseEntity<List<Employee>> getEmployeesByNameSearch(String searchString) {
-        return null;
+    public ResponseEntity<List<Employee>> getEmployeesByNameSearch(@PathVariable String searchString) {
+        return ResponseEntity.ok(employeeService.getEmployeesByNameSearch(searchString));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable String id) {
-        return new ResponseEntity(employeeService.getEmployeeById(id), HttpStatus.OK);
+        return ResponseEntity.ok(employeeService.getEmployeeById(id));
     }
 
     @GetMapping("/highestSalary")
     public ResponseEntity<Integer> getHighestSalaryOfEmployees() {
-        return new ResponseEntity<>(17, HttpStatus.OK);
+        return ResponseEntity.ok(employeeService.getHighestSalaryOfEmployees());
     }
 
     @GetMapping("/topTenHighestEarningEmployeeNames")
     ResponseEntity<List<String>> getTopTenHighestEarningEmployeeNames() {
-        return null;
+        return ResponseEntity.ok(employeeService.getTopTenHighestEarningEmployeeNames());
     }
 
     @PostMapping()
     ResponseEntity<Employee> createEmployee(@RequestBody CreateEmployeeInput employeeInput) {
-        return null;
+        return ResponseEntity.ok(employeeService.createEmployee(employeeInput));
     }
 
     @DeleteMapping("/{id}")
     ResponseEntity<String> deleteEmployeeById(@PathVariable String id) {
-        return null;
+        return ResponseEntity.ok(employeeService.deleteEmployeeById(id));
     }
 
 }
