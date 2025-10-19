@@ -1,15 +1,12 @@
 package com.reliaquest.api.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@RequiredArgsConstructor
-@Getter
-@Setter
+@Data
+@Builder
 public class Employee {
 
     private String id;
@@ -18,10 +15,10 @@ public class Employee {
     private String employeeName;
 
     @JsonProperty("employee_salary")
-    private int employeeSalary;
+    private Integer employeeSalary;
 
     @JsonProperty("employee_age")
-    private int employeeAge;
+    private Integer employeeAge;
 
     @JsonProperty("employee_title")
     private String employeeTitle;

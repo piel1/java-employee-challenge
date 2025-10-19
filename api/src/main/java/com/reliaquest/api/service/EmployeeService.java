@@ -1,13 +1,16 @@
 package com.reliaquest.api.service;
 
-import com.reliaquest.api.model.EmployeeResponseMultiple;
-import com.reliaquest.api.model.Employee;
-import com.reliaquest.api.model.EmployeeResponseSingle;
+import com.reliaquest.api.model.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -17,13 +20,23 @@ public class EmployeeService {
 
     public List<Employee> getAllEmployees() {
 
-        EmployeeResponseMultiple employeeResponse = webClient
+        EmployeeResponseMultiple employeeList = webClient
                 .get()
                 .retrieve()
                 .bodyToMono(EmployeeResponseMultiple.class)
                 .block();
+        
+        return employeeList != null ? employeeList.getData() : null;
+    }
 
-        return employeeResponse.getData();
+    public List<Employee> getEmployeesByNameSearch(String searchString) {
+
+        List<Employee> employeeList = getAllEmployees();
+
+        return employeeList
+                .stream()
+                .filter(e -> e.getEmployeeName().contains(searchString))
+                .toList();
     }
 
     public Employee getEmployeeById(String id) {
@@ -34,6 +47,60 @@ public class EmployeeService {
                 .bodyToMono(EmployeeResponseSingle.class)
                 .block();
 
-        return employeeResponse.getData();
+        return employeeResponse != null ? employeeResponse.getData() : null;
+    }
+
+    public Integer getHighestSalaryOfEmployees() {
+
+        List<Employee> employeeList = getAllEmployees();
+
+        return employeeList
+                .stream()
+                .mapToInt(Employee::getEmployeeSalary)
+                .max()
+                .orElse(0);
+    }
+
+    public List<String> getTopTenHighestEarningEmployeeNames() {
+
+        List<Employee> employeeList = getAllEmployees();
+
+        return employeeList
+                .stream()
+                .sorted(Comparator.comparing(Employee::getEmployeeSalary).reversed())
+                .limit(10)
+                .map(Employee::getEmployeeName)
+                .toList();
+
+    }
+
+    public Employee createEmployee(CreateEmployeeInput employeeInput) {
+
+        EmployeeResponseSingle createdEmployee = webClient
+                .post()
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(employeeInput)
+                .retrieve()
+                .bodyToMono(EmployeeResponseSingle.class)
+                .block();
+
+        return createdEmployee != null ? createdEmployee.getData() : null;
+    }
+
+    public String deleteEmployeeById(String id) {
+
+        Employee employee = getEmployeeById(id);
+
+        String name = "{\"name\": \"" + employee.getEmployeeName() + "\"}";
+
+        EmployeeResponseBoolean response = webClient
+                .method(HttpMethod.DELETE)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(name))
+                .retrieve()
+                .bodyToMono(EmployeeResponseBoolean.class)
+                .block();
+
+        return response != null ? response.getData().toString() : null;
     }
 }

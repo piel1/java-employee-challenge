@@ -1,16 +1,12 @@
 package com.reliaquest.api.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.List;
 
+@Data
 @AllArgsConstructor
-@RequiredArgsConstructor
-@Getter
-@Setter
 public class EmployeeResponseMultiple {
 
     private List<Employee> data;
