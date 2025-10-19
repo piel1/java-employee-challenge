@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class EmployeeResponseMultiple {
+public class EmployeeResponseList {
 
     private List<Employee> data;
     private String status;

@@ -52,7 +52,7 @@ public class EmployeeServiceTest {
     public void testGetAllEmployees() throws JsonProcessingException {
 
         Employee mockEmployee = Employee.builder().employeeName("Jimmy John").build();
-        EmployeeResponseMultiple employeeResponse = new EmployeeResponseMultiple(List.of(mockEmployee), "success");
+        EmployeeResponseList employeeResponse = new EmployeeResponseList(List.of(mockEmployee), "success");
 
         mockServer.enqueue(new MockResponse()
                 .setBody(new ObjectMapper().writeValueAsString(employeeResponse))
@@ -71,7 +71,7 @@ public class EmployeeServiceTest {
         Employee mockEmployee1 = Employee.builder().employeeName("James Bond").build();
         Employee mockEmployee2 = Employee.builder().employeeName("Hetfield, James").build();
 
-        EmployeeResponseMultiple employeeResponse = new EmployeeResponseMultiple(List.of(mockEmployee1, mockEmployee2), "success");
+        EmployeeResponseList employeeResponse = new EmployeeResponseList(List.of(mockEmployee1, mockEmployee2), "success");
 
         mockServer.enqueue(new MockResponse()
                 .setBody(new ObjectMapper().writeValueAsString(employeeResponse))
@@ -87,7 +87,7 @@ public class EmployeeServiceTest {
     public void testGetEmployeesByNameSearch_notFound() throws JsonProcessingException {
 
         Employee mockEmployee = Employee.builder().employeeName("Albert Einstein").build();
-        EmployeeResponseMultiple employeeResponse = new EmployeeResponseMultiple(List.of(mockEmployee), "success");
+        EmployeeResponseList employeeResponse = new EmployeeResponseList(List.of(mockEmployee), "success");
 
         mockServer.enqueue(new MockResponse()
                 .setBody(new ObjectMapper().writeValueAsString(employeeResponse))
@@ -139,7 +139,7 @@ public class EmployeeServiceTest {
         }
         mockEmployees.add(Employee.builder().employeeSalary(95000).build());
 
-        EmployeeResponseMultiple employeeResponse = new EmployeeResponseMultiple(mockEmployees, "success");
+        EmployeeResponseList employeeResponse = new EmployeeResponseList(mockEmployees, "success");
 
         mockServer.enqueue(new MockResponse()
                 .setBody(new ObjectMapper().writeValueAsString(employeeResponse))
@@ -158,7 +158,7 @@ public class EmployeeServiceTest {
             mockEmployees.add(Employee.builder().employeeSalary(i).employeeName("Low Income Joe").build());
         }
 
-        EmployeeResponseMultiple employeeResponse = new EmployeeResponseMultiple(mockEmployees, "success");
+        EmployeeResponseList employeeResponse = new EmployeeResponseList(mockEmployees, "success");
 
         mockServer.enqueue(new MockResponse()
                 .setBody(new ObjectMapper().writeValueAsString(employeeResponse))

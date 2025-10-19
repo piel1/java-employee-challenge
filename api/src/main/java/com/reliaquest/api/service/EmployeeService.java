@@ -5,12 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -20,10 +18,10 @@ public class EmployeeService {
 
     public List<Employee> getAllEmployees() {
 
-        EmployeeResponseMultiple employeeList = webClient
+        EmployeeResponseList employeeList = webClient
                 .get()
                 .retrieve()
-                .bodyToMono(EmployeeResponseMultiple.class)
+                .bodyToMono(EmployeeResponseList.class)
                 .block();
         
         return employeeList != null ? employeeList.getData() : null;
@@ -91,12 +89,12 @@ public class EmployeeService {
 
         Employee employee = getEmployeeById(id);
 
-        String name = "{\"name\": \"" + employee.getEmployeeName() + "\"}";
+        DeleteEmployeeInput deleteEmployeeInput = new DeleteEmployeeInput(employee.getEmployeeName());
 
         EmployeeResponseBoolean response = webClient
                 .method(HttpMethod.DELETE)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(name))
+                .bodyValue(deleteEmployeeInput)
                 .retrieve()
                 .bodyToMono(EmployeeResponseBoolean.class)
                 .block();
