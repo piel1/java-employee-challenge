@@ -1,4 +1,4 @@
-package com.reliaquest.api;
+package com.reliaquest.api.exception.handler;
 
 import com.reliaquest.api.exception.EmployeeServerException;
 import org.springframework.http.HttpStatus;
